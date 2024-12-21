@@ -378,7 +378,68 @@ classDiagram
     User <|-- Admin : extends
 
     class User {
-        <>        -String userSerialNumber        -String firstName        -String lastName        -String phoneNumber        -String gmail        -String password        -LocalDate birthOfDate        -String role        -DateTime createdAt        +String getUserSerialNumber()        +String getRole()        +String getFirstName()        +void setFirstName(String)        +String getLastName()        +void setLastName(String)        +String getPhoneNumber()        +void setPhoneNumber(String)        +String getGmail()        +void setGmail(String)        +String getPassword()        +void setPassword(String)        +LocalDate getBirthOfDate()        +void setBirthOfDate(LocalDate)        +DateTime getCreatedAt()    }    class Teacher {        -String departmentNumber        -List~TeacherCourse~ teachingCourses        +String getDepartmentNumber()        +void setDepartmentNumber(String)        +List~TeacherCourse~ getTeachingCourses()        +void addTeachingCourse(TeacherCourse)        +void removeTeachingCourse(TeacherCourse)    }    class Student {        -String departmentNumber        -int schoolYear        -float GPA        -String academicStatus        -boolean isScholarship        -List~StudentCourse~ enrolledCourses        +String getDepartmentNumber()        +void setDepartmentNumber(String)        +int getSchoolYear()        +void setSchoolYear(int)        +float getGPA()        +void setGPA(float)        +String getAcademicStatus()        +void setAcademicStatus(String)        +boolean getIsScholarship()        +void setIsScholarship(boolean)        +List~StudentCourse~ getEnrolledCourses()        +void addEnrolledCourse(StudentCourse)        +void removeEnrolledCourse(StudentCourse)    }    class Admin {        +String getRole()    }
+        <<abstract>>
+        -String userSerialNumber
+        -String firstName
+        -String lastName
+        -String phoneNumber
+        -String gmail
+        -String password
+        -LocalDate birthOfDate
+        -String role
+        -DateTime createdAt
+        +String getUserSerialNumber()
+        +String getRole()
+        +String getFirstName()
+        +void setFirstName(String)
+        +String getLastName()
+        +void setLastName(String)
+        +String getPhoneNumber()
+        +void setPhoneNumber(String)
+        +String getGmail()
+        +void setGmail(String)
+        +String getPassword()
+        +void setPassword(String)
+        +LocalDate getBirthOfDate()
+        +void setBirthOfDate(LocalDate)
+        +DateTime getCreatedAt()
+    }
+
+    class Teacher {
+        -String departmentNumber
+        -List~TeacherCourse~ teachingCourses
+        +String getDepartmentNumber()
+        +void setDepartmentNumber(String)
+        +List~TeacherCourse~ getTeachingCourses()
+        +void addTeachingCourse(TeacherCourse)
+        +void removeTeachingCourse(TeacherCourse)
+    }
+
+    class Student {
+        -String departmentNumber
+        -int schoolYear
+        -float GPA
+        -String academicStatus
+        -boolean isScholarship
+        -List~StudentCourse~ enrolledCourses
+        +String getDepartmentNumber()
+        +void setDepartmentNumber(String)
+        +int getSchoolYear()
+        +void setSchoolYear(int)
+        +float getGPA()
+        +void setGPA(float)
+        +String getAcademicStatus()
+        +void setAcademicStatus(String)
+        +boolean getIsScholarship()
+        +void setIsScholarship(boolean)
+        +List~StudentCourse~ getEnrolledCourses()
+        +void addEnrolledCourse(StudentCourse)
+        +void removeEnrolledCourse(StudentCourse)
+    }
+
+    class Admin {
+        +String getRole()
+    }
 ```
 
 ## Academic Structure Diagram
