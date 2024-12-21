@@ -1,10 +1,16 @@
-# university-system
+# University System
 
+## Table of Contents
+- [Database Design](#database-design)
+  - [Entity-Relationship Flowchart](#entity-relationship-flowchart)
+  - [ER Diagram](#er-diagram)
+  - [Database Schema](#database-schema)
+  - [Numeric Constraints](#numeric-constraints)
+- [UML Class Diagram](#uml-class-diagram)
 
+## Database Design
 
-# Database desgin
-
-## ER flowchart
+### Entity-Relationship Flowchart
 
 ```mermaid
 graph TD
@@ -93,13 +99,7 @@ graph TD
     classDef composite fill:#efe,stroke:#333,stroke-width:2px;
 ```
 
-## ## Mapping
-
-```mermaid
-
-```
-
-## ER Diagram
+### ER Diagram
 
 ```mermaid
 erDiagram
@@ -129,7 +129,7 @@ erDiagram
 
     STUDENT {
         string userSerialNumber PK, FK
-        string departmentNumber FK "DSN"
+        string departmentNumber FK
         int schoolYear
         float GPA
         string academicStatus
@@ -145,7 +145,7 @@ erDiagram
         string name
         string description
         string departmentNumber FK
-        boolean isActive "derived"
+        boolean isActive
         int maxCapacity
         string semester
         int academicYear
@@ -167,7 +167,7 @@ erDiagram
         string courseCode PK, FK
         float grade
         date enrollmentYear
-        float attendanceRate "derived"
+        float attendanceRate
         string semester
         int academicYear
         date withdrawalDate
@@ -188,135 +188,132 @@ erDiagram
     COURSE ||--|{ STUDENT_COURSE : "enrolled by"
 ```
 
-## Schema Tables
+### Database Schema
 
 1. USER Table
-   
-   ```sql
-   CREATE TABLE USER (
-       USN VARCHAR(50) PRIMARY KEY,
-       first_name VARCHAR(50) NOT NULL,
-       last_name VARCHAR(50) NOT NULL,
-       phone_number VARCHAR(20),
-       gmail VARCHAR(100) UNIQUE NOT NULL,
-       password VARCHAR(255) NOT NULL,
-       birth_of_date DATE,
-       role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   );
-   ```
+```sql
+CREATE TABLE USER (
+    USN VARCHAR(50) PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    phone_number VARCHAR(20),
+    gmail VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    birth_of_date DATE,
+    role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
 
 2. DEPARTMENT Table
-   
-   ```sql
-   CREATE TABLE DEPARTMENT (
-       DSN VARCHAR(20) PRIMARY KEY,
-       name VARCHAR(100) NOT NULL UNIQUE,
-       description TEXT,
-       location VARCHAR(100) NOT NULL
-   );
-   ```
+```sql
+CREATE TABLE DEPARTMENT (
+    DSN VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    location VARCHAR(100) NOT NULL
+);
+```
 
 3. TEACHER Table
-   
-   ```sql
-   CREATE TABLE TEACHER (
-       USN VARCHAR(50) PRIMARY KEY,
-       DSN VARCHAR(20) NOT NULL,
-       FOREIGN KEY (USN) REFERENCES USER(USN)
-       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-   );
-   ```
+```sql
+CREATE TABLE TEACHER (
+    USN VARCHAR(50) PRIMARY KEY,
+    DSN VARCHAR(20) NOT NULL,
+    FOREIGN KEY (USN) REFERENCES USER(USN),
+    FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+);
+```
 
 4. STUDENT Table
-   
-   ```sql
-   CREATE TABLE STUDENT (
-   	USN VARCHAR(50) PRIMARY KEY,
-   	DSN VARCHAR(20) NOT NULL,
-   	school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
-   	gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
-   	academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
-   	is_scholarship BOOLEAN DEFAULT FALSE,
-   	FOREIGN KEY (USN) REFERENCES USER(USN),
-   	FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-   );
-   ```
+```sql
+CREATE TABLE STUDENT (
+    USN VARCHAR(50) PRIMARY KEY,
+    DSN VARCHAR(20) NOT NULL,
+    school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
+    gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
+    academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
+    is_scholarship BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (USN) REFERENCES USER(USN),
+    FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+);
+```
 
 5. ADMIN Table
-   
-   ```sql
-   CREATE TABLE ADMIN (
-       USD VARCHAR(50) PRIMARY KEY,
-       FOREIGN KEY (USD)  REFERENCES USER(USD)
-   );
-   ```
+```sql
+CREATE TABLE ADMIN (
+    USN VARCHAR(50) PRIMARY KEY,
+    FOREIGN KEY (USN) REFERENCES USER(USN)
+);
+```
 
-6. COURSE
-   
-   ```sql
-   CREATE TABLE COURSE (
-       course_code VARCHAR(20) PRIMARY KEY,
-       name VARCHAR(100) NOT NULL,
-       description TEXT,
-       DSN VARCHAR(20) NOT NULL,
-       max_capacity INT NOT NULL CHECK (max_capacity > 0),
-       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-       academic_year INT NOT NULL CHECK (academic_year >= 2000),
-       course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
-       FOREIGN KEY (DSN)  REFERENCES DEPARTMENT(DSN)
-   );
-   ```
+6. COURSE Table
+```sql
+CREATE TABLE COURSE (
+    course_code VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    DSN VARCHAR(20) NOT NULL,
+    max_capacity INT NOT NULL CHECK (max_capacity > 0),
+    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+    academic_year INT NOT NULL CHECK (academic_year >= 2000),
+    course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
+    FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+);
+```
 
-7. TEACHER_COURSE
-   
-   ```sql
-   CREATE TABLE TEACHER_COURSE (
-       USD VARCHAR(50),
-       course_code VARCHAR(20),
-       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-       academic_year INT NOT NULL CHECK (academic_year >= 2000),
-       class_room VARCHAR(50) NOT NULL,
-       schedule_time TIMESTAMP NOT NULL,
-       max_student INT NOT NULL CHECK (max_student > 0,
-       PRIMARY KEY (USD, course_code, semester, academic_year),
-       FOREIGN KEY (USD) REFERENCES TEACHER(USD),
-       FOREIGN KEY (course_code) REFERENCES COURSE(course_code),
-   );
-   ```
+7. TEACHER_COURSE Table
+```sql
+CREATE TABLE TEACHER_COURSE (
+    USN VARCHAR(50),
+    course_code VARCHAR(20),
+    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+    academic_year INT NOT NULL CHECK (academic_year >= 2000),
+    class_room VARCHAR(50) NOT NULL,
+    schedule_time TIMESTAMP NOT NULL,
+    max_student INT NOT NULL CHECK (max_student > 0),
+    PRIMARY KEY (USN, course_code, semester, academic_year),
+    FOREIGN KEY (USN) REFERENCES TEACHER(USN),
+    FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
+);
+```
 
-8. STUDENT_COURSE
+8. STUDENT_COURSE Table
+```sql
+CREATE TABLE STUDENT_COURSE (
+    USN VARCHAR(50),
+    course_code VARCHAR(20),
+    grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
+    enrollment_year DATE NOT NULL,
+    attendance_rate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
+    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+    academic_year INT NOT NULL CHECK (academic_year >= 2000),
+    withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
+    PRIMARY KEY (USN, course_code, semester, academic_year),
+    FOREIGN KEY (USN) REFERENCES STUDENT(USN),
+    FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
+);
+```
+### Numeric Constraints
+   - School Year: 0-4
+   - GPA: 0.00-4.00
+   - Grade: 0.00-100.00
+   - Attendance Rate: 0.00%-100.00%
+   - Academic Year: ≥ 2000
+   - Maximum Capacity: ≥ 0
+   - Maximum Students: ≥ 0
    
-   ```sql
-   CREATE TABLE STUDENT_COURSE (
-       USD VARCHAR(50),
-       course_code VARCHAR(20),
-       grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
-       enrollment_year DATE NOT NULL,
-       attendance_rate DECIMAL(5,2) DEFAULT 0.00  CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
-       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-       academic_year INT NOT NULL CHECK (academic_year >= 2000),
-       withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
-       PRIMARY KEY (USD, course_code, semester, academic_year),
-       FOREIGN KEY (USD) REFERENCES STUDENT(USD),
-       FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
-   );
-   ```
-   
-   
+--- 
 
----
+## UML Class Diagram
 
-# UML Diagram
-
+### User Management Diagram
 ```mermaid
 classDiagram
+    %% User Management Diagram
     User <|-- Teacher : extends
     User <|-- Student : extends
     User <|-- Admin : extends
-    Department "1" --> "*" Teacher : employs
-    Department "1" --> "*" Student : contains
-    Department "1" --> "*" Course : offers
 
     class User {
         <<abstract>>
@@ -344,20 +341,6 @@ classDiagram
         +LocalDate getBirthOfDate()
         +void setBirthOfDate(LocalDate)
         +DateTime getCreatedAt()
-    }
-
-    class Department {
-        -String departmentNumber
-        -String name
-        -String description
-        -String location
-        +String getDepartmentNumber()
-        +String getName()
-        +String getDescription()
-        +String getLocation()
-        +void setName(String)
-        +void setDescription(String)
-        +void setLocation(String)
     }
 
     class Teacher {
@@ -395,6 +378,28 @@ classDiagram
     class Admin {
         +String getRole()
     }
+```
+### Academic Structure Diagram
+```mermaid
+classDiagram
+    %% Academic Structure Diagram
+    Department "1" --> "*" Teacher : employs
+    Department "1" --> "*" Student : contains
+    Department "1" --> "*" Course : offers
+
+    class Department {
+        -String departmentNumber
+        -String name
+        -String description
+        -String location
+        +String getDepartmentNumber()
+        +String getName()
+        +void setName(String)
+        +String getDescription()
+        +void setDescription(String)
+        +String getLocation()
+        +void setLocation(String)
+    }
 
     class Course {
         -String courseCode
@@ -408,14 +413,33 @@ classDiagram
         -String courseType
         +String getCourseCode()
         +String getName()
+        +void setName(String)
         +String getDescription()
+        +void setDescription(String)
         +String getDepartmentNumber()
+        +void setDepartmentNumber(String)
         +boolean getIsActive()
+        +void setIsActive(boolean)
         +int getMaxCapacity()
+        +void setMaxCapacity(int)
         +String getSemester()
+        +void setSemester(String)
         +int getAcademicYear()
+        +void setAcademicYear(int)
         +String getCourseType()
+        +void setCourseType(String)
     }
+```
+### Course Relationships Diagram
+```mermaid
+classDiagram
+    %% Course Relationships Diagram
+    Teacher "*" --> "*" Course : teaches
+    Student "*" --> "*" Course : enrolls
+    Teacher "1" -- "*" TeacherCourse
+    Course "1" -- "*" TeacherCourse
+    Student "1" -- "*" StudentCourse
+    Course "1" -- "*" StudentCourse
 
     class TeacherCourse {
         -String teacherSerialNumber
@@ -425,11 +449,16 @@ classDiagram
         -String classRoom
         -DateTime scheduleTime
         -int maxStudent
+        +String getTeacherSerialNumber()
+        +String getCourseCode()
         +String getSemester()
         +int getAcademicYear()
         +String getClassRoom()
+        +void setClassRoom(String)
         +DateTime getScheduleTime()
+        +void setScheduleTime(DateTime)
         +int getMaxStudent()
+        +void setMaxStudent(int)
     }
 
     class StudentCourse {
@@ -441,28 +470,16 @@ classDiagram
         -String semester
         -int academicYear
         -Date withdrawalDate
+        +String getStudentSerialNumber()
+        +String getCourseCode()
         +float getGrade()
+        +void setGrade(float)
         +Date getEnrollmentYear()
         +float getAttendanceRate()
+        +void setAttendanceRate(float)
         +String getSemester()
         +int getAcademicYear()
         +Date getWithdrawalDate()
+        +void setWithdrawalDate(Date)
     }
-
-    class Role {
-        <<enumeration>>
-        ADMIN
-        TEACHER
-        STUDENT
-        +String value
-        +Role(String value)
-        +String getValue()
-    }
-
-    Teacher "*" --> "*" Course : teaches
-    Student "*" --> "*" Course : enrolls
-    Teacher "1" -- "*" TeacherCourse
-    Course "1" -- "*" TeacherCourse
-    Student "1" -- "*" StudentCourse
-    Course "1" -- "*" StudentCourse
 ```
