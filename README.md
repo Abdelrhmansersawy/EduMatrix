@@ -1,5 +1,3 @@
-# University System
-
 # EduMatrix™
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
@@ -7,13 +5,24 @@
 ![Jakarta EE](https://img.shields.io/badge/Jakarta_EE-10-red.svg)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)
 
-![Image](/home/sersawy/project/university-system/imgs/cover.png)
-
-## Where Educational Management Meets Innovation
+![Image](/imgs/cover.png)
 
 EduMatrix is an enterprise-grade university management system that transforms academic operations through innovative digital solutions. Our comprehensive platform streamlines administrative workflows, enhances academic oversight, and elevates institutional efficiency.
 
-### Core Capabilities
+---
+
+# Table of Contents
+- [Core Capabilities](#core-capabilities)
+- [Key Features](#key-features)
+- [Database Design](#database-design)
+- [Entity-Relationship Flowchart](#entity-relationship-flowchart)
+- [ER Diagram](#er-diagram)
+- [Database Schema](#database-schema)
+- [Numeric Constraints](#numeric-constraints)
+- [UML Class Diagram](#uml-class-diagram)
+
+
+# Core Capabilities
 
 - **Seamless Integration**: Unified platform for all administrative and academic processes
 - **Intelligent Automation**: Smart workflows that reduce manual intervention
@@ -21,7 +30,8 @@ EduMatrix is an enterprise-grade university management system that transforms ac
 - **Scalable Architecture**: Built to grow with your institution
 - **Secure Infrastructure**: Enterprise-level security protocols
 
-### Key Features
+
+# Key Features
 
 🎓 **Academic Management**
 
@@ -49,18 +59,9 @@ EduMatrix is an enterprise-grade university management system that transforms ac
 
 ---
 
-## Table of Contents
+# Database Design
 
-- [Database Design](#database-design)
-  - [Entity-Relationship Flowchart](#entity-relationship-flowchart)
-  - [ER Diagram](#er-diagram)
-  - [Database Schema](#database-schema)
-  - [Numeric Constraints](#numeric-constraints)
-- [UML Class Diagram](#uml-class-diagram)
-
-## Database Design
-
-### Entity-Relationship Flowchart
+## Entity-Relationship Flowchart
 
 ```mermaid
 graph TD
@@ -149,7 +150,7 @@ graph TD
     classDef composite fill:#efe,stroke:#333,stroke-width:2px;
 ```
 
-### ER Diagram
+## ER Diagram
 
 ```mermaid
 erDiagram
@@ -238,7 +239,7 @@ erDiagram
     COURSE ||--|{ STUDENT_COURSE : "enrolled by"
 ```
 
-### Database Schema
+## Database Schema
 
 1. USER Table
    
@@ -365,9 +366,9 @@ erDiagram
 
 ---
 
-## UML Class Diagram
+# UML Class Diagram
 
-### User Management Diagram
+## User Management Diagram
 
 ```mermaid
 classDiagram
@@ -380,7 +381,7 @@ classDiagram
         <>        -String userSerialNumber        -String firstName        -String lastName        -String phoneNumber        -String gmail        -String password        -LocalDate birthOfDate        -String role        -DateTime createdAt        +String getUserSerialNumber()        +String getRole()        +String getFirstName()        +void setFirstName(String)        +String getLastName()        +void setLastName(String)        +String getPhoneNumber()        +void setPhoneNumber(String)        +String getGmail()        +void setGmail(String)        +String getPassword()        +void setPassword(String)        +LocalDate getBirthOfDate()        +void setBirthOfDate(LocalDate)        +DateTime getCreatedAt()    }    class Teacher {        -String departmentNumber        -List~TeacherCourse~ teachingCourses        +String getDepartmentNumber()        +void setDepartmentNumber(String)        +List~TeacherCourse~ getTeachingCourses()        +void addTeachingCourse(TeacherCourse)        +void removeTeachingCourse(TeacherCourse)    }    class Student {        -String departmentNumber        -int schoolYear        -float GPA        -String academicStatus        -boolean isScholarship        -List~StudentCourse~ enrolledCourses        +String getDepartmentNumber()        +void setDepartmentNumber(String)        +int getSchoolYear()        +void setSchoolYear(int)        +float getGPA()        +void setGPA(float)        +String getAcademicStatus()        +void setAcademicStatus(String)        +boolean getIsScholarship()        +void setIsScholarship(boolean)        +List~StudentCourse~ getEnrolledCourses()        +void addEnrolledCourse(StudentCourse)        +void removeEnrolledCourse(StudentCourse)    }    class Admin {        +String getRole()    }
 ```
 
-### Academic Structure Diagram
+## Academic Structure Diagram
 
 ```mermaid
 classDiagram
@@ -433,7 +434,7 @@ classDiagram
     }
 ```
 
-### Course Relationships Diagram
+## Course Relationships Diagram
 
 ```mermaid
 classDiagram
