@@ -1,6 +1,56 @@
 # University System
 
+# EduMatrix™
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Java](https://img.shields.io/badge/Java-17-orange.svg)
+![Jakarta EE](https://img.shields.io/badge/Jakarta_EE-10-red.svg)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)
+
+![Image](/home/sersawy/project/university-system/imgs/cover.png)
+
+## Where Educational Management Meets Innovation
+
+EduMatrix is an enterprise-grade university management system that transforms academic operations through innovative digital solutions. Our comprehensive platform streamlines administrative workflows, enhances academic oversight, and elevates institutional efficiency.
+
+### Core Capabilities
+
+- **Seamless Integration**: Unified platform for all administrative and academic processes
+- **Intelligent Automation**: Smart workflows that reduce manual intervention
+- **Real-time Analytics**: Data-driven insights for informed decision-making
+- **Scalable Architecture**: Built to grow with your institution
+- **Secure Infrastructure**: Enterprise-level security protocols
+
+### Key Features
+
+🎓 **Academic Management**
+
+- Comprehensive course administration
+- Dynamic curriculum planning
+- Automated enrollment processing
+
+👥 **User Management**
+
+- Role-based access control
+- Integrated faculty administration
+- Student lifecycle management
+
+📊 **Department Operations**
+
+- Resource allocation optimization
+- Performance analytics
+- Departmental collaboration tools
+
+🔄 **Process Automation**
+
+- Streamlined workflows
+- Automated reporting
+- Intelligent scheduling
+
+---
+
 ## Table of Contents
+
 - [Database Design](#database-design)
   - [Entity-Relationship Flowchart](#entity-relationship-flowchart)
   - [ER Diagram](#er-diagram)
@@ -39,14 +89,14 @@ graph TD
     IsStudentRel --"1"--- Student
     User --"1"--- IsAdminRel
     IsAdminRel --"1"--- Admin
-    
+
     Department --"1"--- EmplTeachRel
     EmplTeachRel --"M"--- Teacher
     Department --"1"--- ContainsRel
     ContainsRel --"M"--- Student
     Department --"1"--- OffersRel
     OffersRel --"M"--- Course
-    
+
     Teacher --"M"--- TeachesRel
     TeachesRel --"N"--- Course
     Student --"M"--- EnrollsRel
@@ -176,14 +226,14 @@ erDiagram
     USER ||--o| TEACHER : "is a"
     USER ||--o| STUDENT : "is a"
     USER ||--o| ADMIN : "is a"
-    
+
     DEPARTMENT ||--|{ TEACHER : "employs"
     DEPARTMENT ||--|{ STUDENT : "contains"
     DEPARTMENT ||--|{ COURSE : "offers"
-    
+
     TEACHER ||--|{ TEACHER_COURSE : "teaches"
     COURSE ||--|{ TEACHER_COURSE : "taught by"
-    
+
     STUDENT ||--|{ STUDENT_COURSE : "enrolls"
     COURSE ||--|{ STUDENT_COURSE : "enrolled by"
 ```
@@ -191,110 +241,120 @@ erDiagram
 ### Database Schema
 
 1. USER Table
-```sql
-CREATE TABLE USER (
-    USN VARCHAR(50) PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    phone_number VARCHAR(20),
-    gmail VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    birth_of_date DATE,
-    role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+   
+   ```sql
+   CREATE TABLE USER (
+   USN VARCHAR(50) PRIMARY KEY,
+   first_name VARCHAR(50) NOT NULL,
+   last_name VARCHAR(50) NOT NULL,
+   phone_number VARCHAR(20),
+   gmail VARCHAR(100) UNIQUE NOT NULL,
+   password VARCHAR(255) NOT NULL,
+   birth_of_date DATE,
+   role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
 
 2. DEPARTMENT Table
-```sql
-CREATE TABLE DEPARTMENT (
-    DSN VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    location VARCHAR(100) NOT NULL
-);
-```
+   
+   ```sql
+   CREATE TABLE DEPARTMENT (
+   DSN VARCHAR(20) PRIMARY KEY,
+   name VARCHAR(100) NOT NULL UNIQUE,
+   description TEXT,
+   location VARCHAR(100) NOT NULL
+   );
+   ```
 
 3. TEACHER Table
-```sql
-CREATE TABLE TEACHER (
-    USN VARCHAR(50) PRIMARY KEY,
-    DSN VARCHAR(20) NOT NULL,
-    FOREIGN KEY (USN) REFERENCES USER(USN),
-    FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-);
-```
+   
+   ```sql
+   CREATE TABLE TEACHER (
+   USN VARCHAR(50) PRIMARY KEY,
+   DSN VARCHAR(20) NOT NULL,
+   FOREIGN KEY (USN) REFERENCES USER(USN),
+   FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+   );
+   ```
 
 4. STUDENT Table
-```sql
-CREATE TABLE STUDENT (
-    USN VARCHAR(50) PRIMARY KEY,
-    DSN VARCHAR(20) NOT NULL,
-    school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
-    gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
-    academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
-    is_scholarship BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (USN) REFERENCES USER(USN),
-    FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-);
-```
+   
+   ```sql
+   CREATE TABLE STUDENT (
+   USN VARCHAR(50) PRIMARY KEY,
+   DSN VARCHAR(20) NOT NULL,
+   school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
+   gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
+   academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
+   is_scholarship BOOLEAN DEFAULT FALSE,
+   FOREIGN KEY (USN) REFERENCES USER(USN),
+   FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+   );
+   ```
 
 5. ADMIN Table
-```sql
-CREATE TABLE ADMIN (
-    USN VARCHAR(50) PRIMARY KEY,
-    FOREIGN KEY (USN) REFERENCES USER(USN)
-);
-```
+   
+   ```sql
+   CREATE TABLE ADMIN (
+   USN VARCHAR(50) PRIMARY KEY,
+   FOREIGN KEY (USN) REFERENCES USER(USN)
+   );
+   ```
 
 6. COURSE Table
-```sql
-CREATE TABLE COURSE (
-    course_code VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    DSN VARCHAR(20) NOT NULL,
-    max_capacity INT NOT NULL CHECK (max_capacity > 0),
-    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-    academic_year INT NOT NULL CHECK (academic_year >= 2000),
-    course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
-    FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-);
-```
+   
+   ```sql
+   CREATE TABLE COURSE (
+   course_code VARCHAR(20) PRIMARY KEY,
+   name VARCHAR(100) NOT NULL,
+   description TEXT,
+   DSN VARCHAR(20) NOT NULL,
+   max_capacity INT NOT NULL CHECK (max_capacity > 0),
+   semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+   academic_year INT NOT NULL CHECK (academic_year >= 2000),
+   course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
+   FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+   );
+   ```
 
 7. TEACHER_COURSE Table
-```sql
-CREATE TABLE TEACHER_COURSE (
-    USN VARCHAR(50),
-    course_code VARCHAR(20),
-    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-    academic_year INT NOT NULL CHECK (academic_year >= 2000),
-    class_room VARCHAR(50) NOT NULL,
-    schedule_time TIMESTAMP NOT NULL,
-    max_student INT NOT NULL CHECK (max_student > 0),
-    PRIMARY KEY (USN, course_code, semester, academic_year),
-    FOREIGN KEY (USN) REFERENCES TEACHER(USN),
-    FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
-);
-```
+   
+   ```sql
+   CREATE TABLE TEACHER_COURSE (
+   USN VARCHAR(50),
+   course_code VARCHAR(20),
+   semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+   academic_year INT NOT NULL CHECK (academic_year >= 2000),
+   class_room VARCHAR(50) NOT NULL,
+   schedule_time TIMESTAMP NOT NULL,
+   max_student INT NOT NULL CHECK (max_student > 0),
+   PRIMARY KEY (USN, course_code, semester, academic_year),
+   FOREIGN KEY (USN) REFERENCES TEACHER(USN),
+   FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
+   );
+   ```
 
 8. STUDENT_COURSE Table
-```sql
-CREATE TABLE STUDENT_COURSE (
-    USN VARCHAR(50),
-    course_code VARCHAR(20),
-    grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
-    enrollment_year DATE NOT NULL,
-    attendance_rate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
-    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-    academic_year INT NOT NULL CHECK (academic_year >= 2000),
-    withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
-    PRIMARY KEY (USN, course_code, semester, academic_year),
-    FOREIGN KEY (USN) REFERENCES STUDENT(USN),
-    FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
-);
-```
-### Numeric Constraints
+   
+   ```sql
+   CREATE TABLE STUDENT_COURSE (
+   USN VARCHAR(50),
+   course_code VARCHAR(20),
+   grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
+   enrollment_year DATE NOT NULL,
+   attendance_rate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
+   semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+   academic_year INT NOT NULL CHECK (academic_year >= 2000),
+   withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
+   PRIMARY KEY (USN, course_code, semester, academic_year),
+   FOREIGN KEY (USN) REFERENCES STUDENT(USN),
+   FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
+   );
+   ```
+   
+   ### Numeric Constraints
+   
    - School Year: 0-4
    - GPA: 0.00-4.00
    - Grade: 0.00-100.00
@@ -302,12 +362,13 @@ CREATE TABLE STUDENT_COURSE (
    - Academic Year: ≥ 2000
    - Maximum Capacity: ≥ 0
    - Maximum Students: ≥ 0
-   
---- 
+
+---
 
 ## UML Class Diagram
 
 ### User Management Diagram
+
 ```mermaid
 classDiagram
     %% User Management Diagram
@@ -316,70 +377,11 @@ classDiagram
     User <|-- Admin : extends
 
     class User {
-        <<abstract>>
-        -String userSerialNumber
-        -String firstName
-        -String lastName
-        -String phoneNumber
-        -String gmail
-        -String password
-        -LocalDate birthOfDate
-        -String role
-        -DateTime createdAt
-        +String getUserSerialNumber()
-        +String getRole()
-        +String getFirstName()
-        +void setFirstName(String)
-        +String getLastName()
-        +void setLastName(String)
-        +String getPhoneNumber()
-        +void setPhoneNumber(String)
-        +String getGmail()
-        +void setGmail(String)
-        +String getPassword()
-        +void setPassword(String)
-        +LocalDate getBirthOfDate()
-        +void setBirthOfDate(LocalDate)
-        +DateTime getCreatedAt()
-    }
-
-    class Teacher {
-        -String departmentNumber
-        -List~TeacherCourse~ teachingCourses
-        +String getDepartmentNumber()
-        +void setDepartmentNumber(String)
-        +List~TeacherCourse~ getTeachingCourses()
-        +void addTeachingCourse(TeacherCourse)
-        +void removeTeachingCourse(TeacherCourse)
-    }
-
-    class Student {
-        -String departmentNumber
-        -int schoolYear
-        -float GPA
-        -String academicStatus
-        -boolean isScholarship
-        -List~StudentCourse~ enrolledCourses
-        +String getDepartmentNumber()
-        +void setDepartmentNumber(String)
-        +int getSchoolYear()
-        +void setSchoolYear(int)
-        +float getGPA()
-        +void setGPA(float)
-        +String getAcademicStatus()
-        +void setAcademicStatus(String)
-        +boolean getIsScholarship()
-        +void setIsScholarship(boolean)
-        +List~StudentCourse~ getEnrolledCourses()
-        +void addEnrolledCourse(StudentCourse)
-        +void removeEnrolledCourse(StudentCourse)
-    }
-
-    class Admin {
-        +String getRole()
-    }
+        <>        -String userSerialNumber        -String firstName        -String lastName        -String phoneNumber        -String gmail        -String password        -LocalDate birthOfDate        -String role        -DateTime createdAt        +String getUserSerialNumber()        +String getRole()        +String getFirstName()        +void setFirstName(String)        +String getLastName()        +void setLastName(String)        +String getPhoneNumber()        +void setPhoneNumber(String)        +String getGmail()        +void setGmail(String)        +String getPassword()        +void setPassword(String)        +LocalDate getBirthOfDate()        +void setBirthOfDate(LocalDate)        +DateTime getCreatedAt()    }    class Teacher {        -String departmentNumber        -List~TeacherCourse~ teachingCourses        +String getDepartmentNumber()        +void setDepartmentNumber(String)        +List~TeacherCourse~ getTeachingCourses()        +void addTeachingCourse(TeacherCourse)        +void removeTeachingCourse(TeacherCourse)    }    class Student {        -String departmentNumber        -int schoolYear        -float GPA        -String academicStatus        -boolean isScholarship        -List~StudentCourse~ enrolledCourses        +String getDepartmentNumber()        +void setDepartmentNumber(String)        +int getSchoolYear()        +void setSchoolYear(int)        +float getGPA()        +void setGPA(float)        +String getAcademicStatus()        +void setAcademicStatus(String)        +boolean getIsScholarship()        +void setIsScholarship(boolean)        +List~StudentCourse~ getEnrolledCourses()        +void addEnrolledCourse(StudentCourse)        +void removeEnrolledCourse(StudentCourse)    }    class Admin {        +String getRole()    }
 ```
+
 ### Academic Structure Diagram
+
 ```mermaid
 classDiagram
     %% Academic Structure Diagram
@@ -430,7 +432,9 @@ classDiagram
         +void setCourseType(String)
     }
 ```
+
 ### Course Relationships Diagram
+
 ```mermaid
 classDiagram
     %% Course Relationships Diagram
