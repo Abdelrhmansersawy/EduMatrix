@@ -245,15 +245,15 @@ erDiagram
    
    ```sql
    CREATE TABLE USER (
-   USN VARCHAR(50) PRIMARY KEY,
-   first_name VARCHAR(50) NOT NULL,
-   last_name VARCHAR(50) NOT NULL,
-   phone_number VARCHAR(20),
-   gmail VARCHAR(100) UNIQUE NOT NULL,
-   password VARCHAR(255) NOT NULL,
-   birth_of_date DATE,
-   role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+       USN VARCHAR(50) PRIMARY KEY,
+       first_name VARCHAR(50) NOT NULL,
+       last_name VARCHAR(50) NOT NULL,
+       phone_number VARCHAR(20),
+       gmail VARCHAR(100) UNIQUE NOT NULL,
+       password VARCHAR(255) NOT NULL,
+       birth_of_date DATE,
+       role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
+       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    );
    ```
 
@@ -261,10 +261,10 @@ erDiagram
    
    ```sql
    CREATE TABLE DEPARTMENT (
-   DSN VARCHAR(20) PRIMARY KEY,
-   name VARCHAR(100) NOT NULL UNIQUE,
-   description TEXT,
-   location VARCHAR(100) NOT NULL
+       DSN VARCHAR(20) PRIMARY KEY,
+       name VARCHAR(100) NOT NULL UNIQUE,
+       description TEXT,
+       location VARCHAR(100) NOT NULL
    );
    ```
 
@@ -272,10 +272,10 @@ erDiagram
    
    ```sql
    CREATE TABLE TEACHER (
-   USN VARCHAR(50) PRIMARY KEY,
-   DSN VARCHAR(20) NOT NULL,
-   FOREIGN KEY (USN) REFERENCES USER(USN),
-   FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+       USN VARCHAR(50) PRIMARY KEY,
+       DSN VARCHAR(20) NOT NULL,
+       FOREIGN KEY (USN) REFERENCES USER(USN),
+       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
    );
    ```
 
@@ -283,14 +283,14 @@ erDiagram
    
    ```sql
    CREATE TABLE STUDENT (
-   USN VARCHAR(50) PRIMARY KEY,
-   DSN VARCHAR(20) NOT NULL,
-   school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
-   gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
-   academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
-   is_scholarship BOOLEAN DEFAULT FALSE,
-   FOREIGN KEY (USN) REFERENCES USER(USN),
-   FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+       USN VARCHAR(50) PRIMARY KEY,
+       DSN VARCHAR(20) NOT NULL,
+       school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
+       gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
+       academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
+       is_scholarship BOOLEAN DEFAULT FALSE,
+       FOREIGN KEY (USN) REFERENCES USER(USN),
+       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
    );
    ```
 
@@ -298,8 +298,8 @@ erDiagram
    
    ```sql
    CREATE TABLE ADMIN (
-   USN VARCHAR(50) PRIMARY KEY,
-   FOREIGN KEY (USN) REFERENCES USER(USN)
+       USN VARCHAR(50) PRIMARY KEY,
+       FOREIGN KEY (USN) REFERENCES USER(USN)
    );
    ```
 
@@ -307,15 +307,15 @@ erDiagram
    
    ```sql
    CREATE TABLE COURSE (
-   course_code VARCHAR(20) PRIMARY KEY,
-   name VARCHAR(100) NOT NULL,
-   description TEXT,
-   DSN VARCHAR(20) NOT NULL,
-   max_capacity INT NOT NULL CHECK (max_capacity > 0),
-   semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-   academic_year INT NOT NULL CHECK (academic_year >= 2000),
-   course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
-   FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
+       course_code VARCHAR(20) PRIMARY KEY,
+       name VARCHAR(100) NOT NULL,
+       description TEXT,
+       DSN VARCHAR(20) NOT NULL,
+       max_capacity INT NOT NULL CHECK (max_capacity > 0),
+       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+       academic_year INT NOT NULL CHECK (academic_year >= 2000),
+       course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
+       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
    );
    ```
 
@@ -323,16 +323,16 @@ erDiagram
    
    ```sql
    CREATE TABLE TEACHER_COURSE (
-   USN VARCHAR(50),
-   course_code VARCHAR(20),
-   semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-   academic_year INT NOT NULL CHECK (academic_year >= 2000),
-   class_room VARCHAR(50) NOT NULL,
-   schedule_time TIMESTAMP NOT NULL,
-   max_student INT NOT NULL CHECK (max_student > 0),
-   PRIMARY KEY (USN, course_code, semester, academic_year),
-   FOREIGN KEY (USN) REFERENCES TEACHER(USN),
-   FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
+       USN VARCHAR(50),
+       course_code VARCHAR(20),
+       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+       academic_year INT NOT NULL CHECK (academic_year >= 2000),
+       class_room VARCHAR(50) NOT NULL,
+       schedule_time TIMESTAMP NOT NULL,
+       max_student INT NOT NULL CHECK (max_student > 0),
+       PRIMARY KEY (USN, course_code, semester, academic_year),
+       FOREIGN KEY (USN) REFERENCES TEACHER(USN),
+       FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
    );
    ```
 
@@ -340,17 +340,17 @@ erDiagram
    
    ```sql
    CREATE TABLE STUDENT_COURSE (
-   USN VARCHAR(50),
-   course_code VARCHAR(20),
-   grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
-   enrollment_year DATE NOT NULL,
-   attendance_rate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
-   semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-   academic_year INT NOT NULL CHECK (academic_year >= 2000),
-   withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
-   PRIMARY KEY (USN, course_code, semester, academic_year),
-   FOREIGN KEY (USN) REFERENCES STUDENT(USN),
-   FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
+       USN VARCHAR(50),
+       course_code VARCHAR(20),
+       grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
+       enrollment_year DATE NOT NULL,
+       attendance_rate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
+       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+       academic_year INT NOT NULL CHECK (academic_year >= 2000),
+       withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
+       PRIMARY KEY (USN, course_code, semester, academic_year),
+       FOREIGN KEY (USN) REFERENCES STUDENT(USN),
+       FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
    );
    ```
    
