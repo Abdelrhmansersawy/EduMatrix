@@ -14,50 +14,25 @@ EduMatrix is an enterprise-grade university management system that transforms ac
 # Table of Contents
 - [Core Capabilities](#core-capabilities)
 - [Key Features](#key-features)
+  - [Academic Management](#academic-management)
+  - [User Management](#user-management)
+  - [Department Operations](#department-operations)
+  - [Process Automation](#process-automation)
 - [Database Design](#database-design)
-- [Entity-Relationship Flowchart](#entity-relationship-flowchart)
-- [ER Diagram](#er-diagram)
-- [Database Schema](#database-schema)
-- [Numeric Constraints](#numeric-constraints)
+  - [Entity-Relationship Flowchart](#entity-relationship-flowchart)
+  - [ER Diagram](#er-diagram)
+  - [Database Schema](#database-schema)
+  - [Constraints](#constraints)
+  - [ENUMs](#enums)
+    - [User Role](#user-role)
+    - [Academic Status](#academic-status)
+    - [Semester](#semester)
+    - [Course Type](#course-type)
 - [UML Class Diagram](#uml-class-diagram)
+  - [User Management Diagram](#user-management-diagram)
+  - [Academic Structure Diagram](#academic-structure-diagram)
+  - [Course Relationships Diagram](#course-relationships-diagram)
 
-
-# Core Capabilities
-
-- **Seamless Integration**: Unified platform for all administrative and academic processes
-- **Intelligent Automation**: Smart workflows that reduce manual intervention
-- **Real-time Analytics**: Data-driven insights for informed decision-making
-- **Scalable Architecture**: Built to grow with your institution
-- **Secure Infrastructure**: Enterprise-level security protocols
-
-
-# Key Features
-
-🎓 **Academic Management**
-
-- Comprehensive course administration
-- Dynamic curriculum planning
-- Automated enrollment processing
-
-👥 **User Management**
-
-- Role-based access control
-- Integrated faculty administration
-- Student lifecycle management
-
-📊 **Department Operations**
-
-- Resource allocation optimization
-- Performance analytics
-- Departmental collaboration tools
-
-🔄 **Process Automation**
-
-- Streamlined workflows
-- Automated reporting
-- Intelligent scheduling
-
----
 
 # Database Design
 
@@ -77,7 +52,6 @@ graph TD
     IsTeacherRel{is a}:::relationship
     IsStudentRel{is a}:::relationship
     IsAdminRel{is a}:::relationship
-    TeachesRel{TEACHES}:::relationship
     EnrollsRel{ENROLLS}:::relationship
     EmplTeachRel{EMPLOYS}:::relationship
     ContainsRel{CONTAINS}:::relationship
@@ -98,8 +72,6 @@ graph TD
     Department --"1"--- OffersRel
     OffersRel --"M"--- Course
 
-    Teacher --"M"--- TeachesRel
-    TeachesRel --"N"--- Course
     Student --"M"--- EnrollsRel
     EnrollsRel --"N"--- Course
 
@@ -203,16 +175,6 @@ erDiagram
         string courseType
     }
 
-    TEACHER_COURSE {
-        string userSerialNumber PK, FK
-        string courseCode PK, FK
-        string semester
-        int academicYear
-        string classRoom
-        datetime scheduleTime
-        int maxStudent
-    }
-
     STUDENT_COURSE {
         string userSerialNumber PK, FK
         string courseCode PK, FK
@@ -232,140 +194,131 @@ erDiagram
     DEPARTMENT ||--|{ STUDENT : "contains"
     DEPARTMENT ||--|{ COURSE : "offers"
 
-    TEACHER ||--|{ TEACHER_COURSE : "teaches"
-    COURSE ||--|{ TEACHER_COURSE : "taught by"
-
     STUDENT ||--|{ STUDENT_COURSE : "enrolls"
     COURSE ||--|{ STUDENT_COURSE : "enrolled by"
 ```
 
 ## Database Schema
-
 1. USER Table
-   
-   ```sql
-   CREATE TABLE USER (
-       USN VARCHAR(50) PRIMARY KEY,
-       first_name VARCHAR(50) NOT NULL,
-       last_name VARCHAR(50) NOT NULL,
-       phone_number VARCHAR(20),
-       gmail VARCHAR(100) UNIQUE NOT NULL,
-       password VARCHAR(255) NOT NULL,
-       birth_of_date DATE,
-       role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-   );
-   ```
+```sql
+CREATE TABLE USER (
+    userSerialNumber VARCHAR(50) PRIMARY KEY,
+    firstName VARCHAR(50) NOT NULL,
+    lastName VARCHAR(50) NOT NULL,
+    phoneNumber VARCHAR(20),
+    gmail VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    birthOfDate DATE,
+    role ENUM('ADMIN', 'TEACHER', 'STUDENT') NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
 
 2. DEPARTMENT Table
-   
-   ```sql
-   CREATE TABLE DEPARTMENT (
-       DSN VARCHAR(20) PRIMARY KEY,
-       name VARCHAR(100) NOT NULL UNIQUE,
-       description TEXT,
-       location VARCHAR(100) NOT NULL
-   );
-   ```
+```sql
+CREATE TABLE DEPARTMENT (
+    departmentNumber VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    location VARCHAR(100) NOT NULL
+);
+```
 
 3. TEACHER Table
-   
-   ```sql
-   CREATE TABLE TEACHER (
-       USN VARCHAR(50) PRIMARY KEY,
-       DSN VARCHAR(20) NOT NULL,
-       FOREIGN KEY (USN) REFERENCES USER(USN),
-       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-   );
-   ```
+```sql
+CREATE TABLE TEACHER (
+    userSerialNumber VARCHAR(50) PRIMARY KEY,
+    departmentNumber VARCHAR(20) NOT NULL,
+    FOREIGN KEY (userSerialNumber) REFERENCES USER(userSerialNumber),
+    FOREIGN KEY (departmentNumber) REFERENCES DEPARTMENT(departmentNumber)
+);
+```
 
 4. STUDENT Table
-   
-   ```sql
-   CREATE TABLE STUDENT (
-       USN VARCHAR(50) PRIMARY KEY,
-       DSN VARCHAR(20) NOT NULL,
-       school_year INT NOT NULL CHECK (school_year BETWEEN 0 AND 4),
-       gpa DECIMAL(3,2) CHECK (gpa >= 0.00 AND gpa <= 4.00),
-       academic_status ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
-       is_scholarship BOOLEAN DEFAULT FALSE,
-       FOREIGN KEY (USN) REFERENCES USER(USN),
-       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-   );
-   ```
+```sql
+CREATE TABLE STUDENT (
+    userSerialNumber VARCHAR(50) PRIMARY KEY,
+    departmentNumber VARCHAR(20) NOT NULL,
+    schoolYear INT NOT NULL CHECK (schoolYear BETWEEN 0 AND 4),
+    GPA DECIMAL(3,2) CHECK (GPA >= 0.00 AND GPA <= 4.00),
+    academicStatus ENUM('ACTIVE', 'PROBATION', 'SUSPENDED', 'GRADUATED') DEFAULT 'ACTIVE',
+    isScholarship BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (userSerialNumber) REFERENCES USER(userSerialNumber),
+    FOREIGN KEY (departmentNumber) REFERENCES DEPARTMENT(departmentNumber)
+);
+```
 
 5. ADMIN Table
-   
-   ```sql
-   CREATE TABLE ADMIN (
-       USN VARCHAR(50) PRIMARY KEY,
-       FOREIGN KEY (USN) REFERENCES USER(USN)
-   );
-   ```
+```sql
+CREATE TABLE ADMIN (
+    userSerialNumber VARCHAR(50) PRIMARY KEY,
+    FOREIGN KEY (userSerialNumber) REFERENCES USER(userSerialNumber)
+);
+```
 
 6. COURSE Table
-   
-   ```sql
-   CREATE TABLE COURSE (
-       course_code VARCHAR(20) PRIMARY KEY,
-       name VARCHAR(100) NOT NULL,
-       description TEXT,
-       DSN VARCHAR(20) NOT NULL,
-       max_capacity INT NOT NULL CHECK (max_capacity > 0),
-       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-       academic_year INT NOT NULL CHECK (academic_year >= 2000),
-       course_type ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
-       FOREIGN KEY (DSN) REFERENCES DEPARTMENT(DSN)
-   );
-   ```
+```sql
+CREATE TABLE COURSE (
+    courseCode VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    departmentNumber VARCHAR(20) NOT NULL,
+    isActive BOOLEAN DEFAULT TRUE,
+    maxCapacity INT NOT NULL CHECK (maxCapacity > 0),
+    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+    academicYear INT NOT NULL CHECK (academicYear >= 2000),
+    courseType ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
+    FOREIGN KEY (departmentNumber) REFERENCES DEPARTMENT(departmentNumber)
+);
+```
 
-7. TEACHER_COURSE Table
-   
-   ```sql
-   CREATE TABLE TEACHER_COURSE (
-       USN VARCHAR(50),
-       course_code VARCHAR(20),
-       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-       academic_year INT NOT NULL CHECK (academic_year >= 2000),
-       class_room VARCHAR(50) NOT NULL,
-       schedule_time TIMESTAMP NOT NULL,
-       max_student INT NOT NULL CHECK (max_student > 0),
-       PRIMARY KEY (USN, course_code, semester, academic_year),
-       FOREIGN KEY (USN) REFERENCES TEACHER(USN),
-       FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
-   );
-   ```
+7. STUDENT_COURSE Table
+```sql
+CREATE TABLE STUDENT_COURSE (
+    userSerialNumber VARCHAR(50),
+    courseCode VARCHAR(20),
+    grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
+    enrollmentYear DATE NOT NULL,
+    attendanceRate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendanceRate >= 0.00 AND attendanceRate <= 100.00),
+    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+    academicYear INT NOT NULL CHECK (academicYear >= 2000),
+    withdrawalDate DATE CHECK (withdrawalDate >= enrollmentYear),
+    PRIMARY KEY (userSerialNumber, courseCode, semester, academicYear),
+    FOREIGN KEY (userSerialNumber) REFERENCES STUDENT(userSerialNumber),
+    FOREIGN KEY (courseCode) REFERENCES COURSE(courseCode)
+);
+```
 
-8. STUDENT_COURSE Table
-   
-   ```sql
-   CREATE TABLE STUDENT_COURSE (
-       USN VARCHAR(50),
-       course_code VARCHAR(20),
-       grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
-       enrollment_year DATE NOT NULL,
-       attendance_rate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendance_rate >= 0.00 AND attendance_rate <= 100.00),
-       semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-       academic_year INT NOT NULL CHECK (academic_year >= 2000),
-       withdrawal_date DATE CHECK (withdrawal_date >= enrollment_year),
-       PRIMARY KEY (USN, course_code, semester, academic_year),
-       FOREIGN KEY (USN) REFERENCES STUDENT(USN),
-       FOREIGN KEY (course_code) REFERENCES COURSE(course_code)
-   );
-   ```
-   
-   ### Numeric Constraints
-   
-   - School Year: 0-4
-   - GPA: 0.00-4.00
-   - Grade: 0.00-100.00
-   - Attendance Rate: 0.00%-100.00%
-   - Academic Year: ≥ 2000
-   - Maximum Capacity: ≥ 0
-   - Maximum Students: ≥ 0
+### Constraints:
+- School Year: 0-4
+- GPA: 0.00-4.00
+- Grade: 0.00-100.00
+- Attendance Rate: 0.00%-100.00%
+- Academic Year: ≥ 2000
+- Maximum Capacity: > 0
 
----
+### ENUMs:
+1. User Role:
+   - ADMIN
+   - TEACHER
+   - STUDENT
 
+2. Academic Status:
+   - ACTIVE
+   - PROBATION
+   - SUSPENDED
+   - GRADUATED
+
+3. Semester:
+   - FALL
+   - SPRING
+   - SUMMER
+
+4. Course Type:
+   - MANDATORY
+   - ELECTIVE
+   - GENERAL
+   
 # UML Class Diagram
 
 ## User Management Diagram
@@ -407,12 +360,8 @@ classDiagram
 
     class Teacher {
         -String departmentNumber
-        -List~TeacherCourse~ teachingCourses
         +String getDepartmentNumber()
         +void setDepartmentNumber(String)
-        +List~TeacherCourse~ getTeachingCourses()
-        +void addTeachingCourse(TeacherCourse)
-        +void removeTeachingCourse(TeacherCourse)
     }
 
     class Student {
@@ -500,32 +449,9 @@ classDiagram
 ```mermaid
 classDiagram
     %% Course Relationships Diagram
-    Teacher "*" --> "*" Course : teaches
     Student "*" --> "*" Course : enrolls
-    Teacher "1" -- "*" TeacherCourse
-    Course "1" -- "*" TeacherCourse
     Student "1" -- "*" StudentCourse
     Course "1" -- "*" StudentCourse
-
-    class TeacherCourse {
-        -String teacherSerialNumber
-        -String courseCode
-        -String semester
-        -int academicYear
-        -String classRoom
-        -DateTime scheduleTime
-        -int maxStudent
-        +String getTeacherSerialNumber()
-        +String getCourseCode()
-        +String getSemester()
-        +int getAcademicYear()
-        +String getClassRoom()
-        +void setClassRoom(String)
-        +DateTime getScheduleTime()
-        +void setScheduleTime(DateTime)
-        +int getMaxStudent()
-        +void setMaxStudent(int)
-    }
 
     class StudentCourse {
         -String studentSerialNumber
