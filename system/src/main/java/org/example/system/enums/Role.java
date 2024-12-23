@@ -1,9 +1,9 @@
 package org.example.system.enums;
 
 public enum Role {
-    ADMIN("admin"),
-    TEACHER("teacher"),
-    STUDENT("student");
+    ADMIN("ADMIN"),
+    TEACHER("TEACHER"),
+    STUDENT("STUDENT");
     private final String value;
     Role(String value) {
         this.value = value;

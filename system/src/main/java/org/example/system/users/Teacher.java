@@ -6,6 +6,7 @@ import org.example.system.models.User;
 import org.example.system.enums.Role;
 
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +18,8 @@ public class Teacher extends User {
         super();
         this.teachingCourses = new ArrayList<>();
     }
-
-    public Teacher(String departmentNumber) {
-        super();
-        this.departmentNumber = departmentNumber;
+    public Teacher(Connection connection) {
+        super(connection);
         this.teachingCourses = new ArrayList<>();
     }
 

@@ -1,6 +1,6 @@
 -- Create database
-CREATE DATABASE IF NOT EXISTS student_management_system;
-USE student_management_system;
+CREATE DATABASE IF NOT EXISTS EduMatrix;
+USE EduMatrix;
 
 -- Create USER table
 CREATE TABLE USER (
@@ -67,15 +67,17 @@ CREATE TABLE COURSE (
 
 -- Create STUDENT_COURSE table
 CREATE TABLE STUDENT_COURSE (
-    userSerialNumber VARCHAR(50),
-    courseCode VARCHAR(20),
-    grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
-    enrollmentYear DATE NOT NULL,
-    attendanceRate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendanceRate >= 0.00 AND attendanceRate <= 100.00),
-    semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
-    academicYear INT NOT NULL CHECK (academicYear >= 2000),
-    withdrawalDate DATE CHECK (withdrawalDate >= enrollmentYear),
-    PRIMARY KEY (userSerialNumber, courseCode, semester, academicYear),
-    FOREIGN KEY (userSerialNumber) REFERENCES STUDENT(userSerialNumber),
-    FOREIGN KEY (courseCode) REFERENCES COURSE(courseCode)
+                                userSerialNumber VARCHAR(50),
+                                courseCode VARCHAR(20),
+                                grade DECIMAL(4,2) CHECK (grade >= 0.00 AND grade <= 100.00),
+                                enrollmentYear DATE NOT NULL,
+                                attendanceRate DECIMAL(5,2) DEFAULT 0.00 CHECK (attendanceRate >= 0.00 AND attendanceRate <= 100.00),
+                                semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
+                                academicYear INT NOT NULL CHECK (academicYear >= 2000),
+                                withdrawalDate DATE,
+                                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                PRIMARY KEY (userSerialNumber, courseCode, semester, academicYear),
+                                FOREIGN KEY (userSerialNumber) REFERENCES STUDENT(userSerialNumber) ON DELETE CASCADE,
+                                FOREIGN KEY (courseCode) REFERENCES COURSE(courseCode) ON DELETE CASCADE,
+                                CONSTRAINT check_withdrawal_date CHECK (withdrawalDate IS NULL OR withdrawalDate >= enrollmentYear)
 );

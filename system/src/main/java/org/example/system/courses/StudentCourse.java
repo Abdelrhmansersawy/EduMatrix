@@ -2,20 +2,36 @@ package org.example.system.courses;
 
 import org.example.system.models.Course;
 import org.example.system.enums.Semester;
+import org.example.system.enums.CourseType;
 import java.time.LocalDate;
+import java.sql.Connection;
 
 public class StudentCourse extends Course {
     private String studentSerialNumber;
     private float grade;
     private LocalDate enrollmentYear;
     private float attendanceRate;
-    private Semester semester;
-    private int academicYear;
     private LocalDate withdrawalDate;
 
-    public StudentCourse() {
-        super();
+    public StudentCourse(Connection connection) {
+        super(connection);
     }
+
+    public StudentCourse(Connection connection, String courseCode, String name, String description,
+                         String departmentNumber, String teacherSerialNumber, boolean isActive,
+                         int maxCapacity, Semester semester, int academicYear, CourseType courseType,
+                         String studentSerialNumber, float grade, LocalDate enrollmentYear,
+                         float attendanceRate, LocalDate withdrawalDate) {
+        super(courseCode, name, description, departmentNumber, teacherSerialNumber,
+                isActive, maxCapacity, semester, academicYear, courseType);
+        this.studentSerialNumber = studentSerialNumber;
+        this.grade = grade;
+        this.enrollmentYear = enrollmentYear;
+        this.attendanceRate = attendanceRate;
+        this.withdrawalDate = withdrawalDate;
+        validateStudentCourseData();
+    }
+
 
     // Student-specific getters and setters
     public String getStudentSerialNumber() {
@@ -50,25 +66,6 @@ public class StudentCourse extends Course {
         this.attendanceRate = attendanceRate;
     }
 
-    @Override
-    public Semester getSemester() {
-        return semester;
-    }
-
-    @Override
-    public void setSemester(Semester semester) {
-        this.semester = semester;
-    }
-
-    @Override
-    public int getAcademicYear() {
-        return academicYear;
-    }
-
-    @Override
-    public void setAcademicYear(int academicYear) {
-        this.academicYear = academicYear;
-    }
 
     public LocalDate getWithdrawalDate() {
         return withdrawalDate;
@@ -78,16 +75,15 @@ public class StudentCourse extends Course {
         this.withdrawalDate = withdrawalDate;
     }
 
-    // Helper method for enum conversion
-    public void setSemesterFromString(String semesterStr) {
-        try {
-            this.semester = Semester.valueOf(semesterStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid semester value: " + semesterStr);
+    private void validateStudentCourseData() {
+        if (grade < 0.0 || grade > 100.0) {
+            throw new IllegalArgumentException("Grade must be between 0 and 100");
         }
-    }
-
-    public String getSemesterAsString() {
-        return semester != null ? semester.name() : null;
+        if (attendanceRate < 0.0 || attendanceRate > 100.0) {
+            throw new IllegalArgumentException("Attendance rate must be between 0 and 100");
+        }
+        if (withdrawalDate != null && withdrawalDate.isBefore(enrollmentYear)) {
+            throw new IllegalArgumentException("Withdrawal date cannot be before enrollment date");
+        }
     }
 }

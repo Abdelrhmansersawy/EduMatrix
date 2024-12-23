@@ -24,8 +24,16 @@
                     maxWidth="Infinity"
                     styleClass="primary-button"
                     HBox.hgrow="ALWAYS"/>
-            <Button fx:id="signUpButton" text="Sign Up"
-                    onAction="#handleSignUp"
+        </HBox>
+
+        <HBox spacing="10.0" alignment="CENTER">
+            <Button fx:id="teacherSignUpButton" text="Sign Up as Teacher"
+                    onAction="#handleTeacherSignUp"
+                    maxWidth="Infinity"
+                    styleClass="secondary-button"
+                    HBox.hgrow="ALWAYS"/>
+            <Button fx:id="studentSignUpButton" text="Sign Up as Student"
+                    onAction="#handleStudentSignUp"
                     maxWidth="Infinity"
                     styleClass="secondary-button"
                     HBox.hgrow="ALWAYS"/>

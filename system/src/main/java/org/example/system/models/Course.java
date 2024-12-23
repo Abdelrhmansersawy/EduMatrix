@@ -1,129 +1,154 @@
-package org.example.system.models;
+    package org.example.system.models;
 
-import org.example.system.enums.CourseType;
-import org.example.system.enums.Semester;
-import java.time.LocalDateTime;
+    import org.example.system.enums.CourseType;
+    import org.example.system.enums.Semester;
 
-public class Course {
-    private String courseCode;
-    private String name;
-    private String description;
-    private String departmentNumber;
-    private boolean isActive;
-    private int maxCapacity;
-    private Semester semester;
-    private int academicYear;
-    private CourseType courseType;
-    private String classRoom;
-    private LocalDateTime scheduleTime;
+    import java.sql.Connection;
+    import java.time.LocalDateTime;
 
-    // Getters and Setters
-    public String getCourseCode() {
-        return courseCode;
-    }
+    public class Course {
+        private String courseCode;
+        private String name;
+        private String description;
+        private String departmentNumber;
+        private String teacherSerialNumber;
+        private boolean isActive;
+        private int maxCapacity;
+        private Semester semester;
+        private int academicYear;
+        private CourseType courseType;
 
-    public String getName() {
-        return name;
-    }
+        protected Connection connection;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+        public Course(Connection connection) {
+            this.connection = connection;
+        }
 
-    public String getDescription() {
-        return description;
-    }
+        public Course(String courseCode, String name, String description, String departmentNumber,
+                      String teacherSerialNumber, boolean isActive, int maxCapacity, Semester semester,
+                      int academicYear, CourseType courseType) {
+            this.courseCode = courseCode;
+            this.name = name;
+            this.description = description;
+            this.departmentNumber = departmentNumber;
+            this.teacherSerialNumber = teacherSerialNumber;
+            this.isActive = isActive;
+            this.maxCapacity = maxCapacity;
+            this.semester = semester;
+            this.academicYear = academicYear;
+            this.courseType = courseType;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+            validateCourseData();
+        }
 
-    public String getDepartmentNumber() {
-        return departmentNumber;
-    }
+        // Getters and Setters
+        public String getCourseCode() {
+            return courseCode;
+        }
 
-    public void setDepartmentNumber(String departmentNumber) {
-        this.departmentNumber = departmentNumber;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public boolean getIsActive() {
-        return isActive;
-    }
+        public void setName(String name) {
+            this.name = name;
+        }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
+        public String getDescription() {
+            return description;
+        }
 
-    public int getMaxCapacity() {
-        return maxCapacity;
-    }
+        public void setDescription(String description) {
+            this.description = description;
+        }
 
-    public void setMaxCapacity(int maxCapacity) {
-        this.maxCapacity = maxCapacity;
-    }
+        public String getDepartmentNumber() {
+            return departmentNumber;
+        }
 
-    public Semester getSemester() {
-        return semester;
-    }
+        public void setDepartmentNumber(String departmentNumber) {
+            this.departmentNumber = departmentNumber;
+        }
 
-    public void setSemester(Semester semester) {
-        this.semester = semester;
-    }
+        public boolean getIsActive() {
+            return isActive;
+        }
 
-    public int getAcademicYear() {
-        return academicYear;
-    }
+        public void setIsActive(boolean isActive) {
+            this.isActive = isActive;
+        }
 
-    public void setAcademicYear(int academicYear) {
-        this.academicYear = academicYear;
-    }
+        public int getMaxCapacity() {
+            return maxCapacity;
+        }
 
-    public CourseType getCourseType() {
-        return courseType;
-    }
+        public void setMaxCapacity(int maxCapacity) {
+            this.maxCapacity = maxCapacity;
+        }
 
-    public void setCourseType(CourseType courseType) {
-        this.courseType = courseType;
-    }
+        public Semester getSemester() {
+            return semester;
+        }
 
-    public String getClassRoom() {
-        return classRoom;
-    }
+        public void setSemester(Semester semester) {
+            this.semester = semester;
+        }
 
-    public void setClassRoom(String classRoom) {
-        this.classRoom = classRoom;
-    }
+        public int getAcademicYear() {
+            return academicYear;
+        }
 
-    public LocalDateTime getScheduleTime() {
-        return scheduleTime;
-    }
+        public void setAcademicYear(int academicYear) {
+            this.academicYear = academicYear;
+        }
 
-    public void setScheduleTime(LocalDateTime scheduleTime) {
-        this.scheduleTime = scheduleTime;
-    }
+        public CourseType getCourseType() {
+            return courseType;
+        }
 
-    // Additional helper methods for enum conversions
-    public void setSemesterFromString(String semesterStr) {
-        try {
-            this.semester = Semester.valueOf(semesterStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid semester value: " + semesterStr);
+        public void setCourseType(CourseType courseType) {
+            this.courseType = courseType;
+        }
+
+
+        // Additional helper methods for enum conversions
+        public void setSemesterFromString(String semesterStr) {
+            try {
+                this.semester = Semester.valueOf(semesterStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid semester value: " + semesterStr);
+            }
+        }
+
+        public void setCourseTypeFromString(String courseTypeStr) {
+            try {
+                this.courseType = CourseType.valueOf(courseTypeStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid course type value: " + courseTypeStr);
+            }
+        }
+
+        public String getSemesterAsString() {
+            return semester != null ? semester.name() : null;
+        }
+
+        public String getCourseTypeAsString() {
+            return courseType != null ? courseType.name() : null;
+        }
+        public String getTeacherSerialNumber() {
+            return teacherSerialNumber;
+        }
+
+        public void setTeacherSerialNumber(String teacherSerialNumber) {
+            this.teacherSerialNumber = teacherSerialNumber;
+        }
+
+        private void validateCourseData() {
+            if (maxCapacity <= 0) {
+                throw new IllegalArgumentException("Max capacity must be greater than 0");
+            }
+            if (academicYear < 2000) {
+                throw new IllegalArgumentException("Academic year must be 2000 or later");
+            }
         }
     }
-
-    public void setCourseTypeFromString(String courseTypeStr) {
-        try {
-            this.courseType = CourseType.valueOf(courseTypeStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid course type value: " + courseTypeStr);
-        }
-    }
-
-    public String getSemesterAsString() {
-        return semester != null ? semester.name() : null;
-    }
-
-    public String getCourseTypeAsString() {
-        return courseType != null ? courseType.name() : null;
-    }
-}
