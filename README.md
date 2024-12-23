@@ -33,6 +33,35 @@ EduMatrix is an enterprise-grade university management system that transforms ac
   - [Academic Structure Diagram](#academic-structure-diagram)
   - [Course Relationships Diagram](#course-relationships-diagram)
 
+# Core Capabilities
+
+- **Seamless Integration**: Unified platform for all administrative and academic processes
+- **Intelligent Automation**: Smart workflows that reduce manual intervention
+- **Real-time Analytics**: Data-driven insights for informed decision-making
+- **Scalable Architecture**: Built to grow with your institution
+- **Secure Infrastructure**: Enterprise-level security protocols
+
+# Key Features
+
+🎓 **Academic Management**
+- Comprehensive course administration
+- Dynamic curriculum planning
+- Automated enrollment processing
+
+👥 **User Management**
+- Role-based access control
+- Integrated faculty administration
+- Student lifecycle management
+
+📊 **Department Operations**
+- Resource allocation optimization
+- Performance analytics
+- Departmental collaboration tools
+
+🔄 **Process Automation**
+- Streamlined workflows
+- Automated reporting
+- Intelligent scheduling
 
 # Database Design
 
@@ -56,6 +85,7 @@ graph TD
     EmplTeachRel{EMPLOYS}:::relationship
     ContainsRel{CONTAINS}:::relationship
     OffersRel{OFFERS}:::relationship
+    TeachesRel{TEACHES}:::relationship
 
     %% Entity-Relationship Connections
     User --"1"--- IsTeacherRel
@@ -71,6 +101,9 @@ graph TD
     ContainsRel --"M"--- Student
     Department --"1"--- OffersRel
     OffersRel --"M"--- Course
+
+    Teacher --"1"--- TeachesRel
+    TeachesRel --"M"--- Course
 
     Student --"M"--- EnrollsRel
     EnrollsRel --"N"--- Course
@@ -108,6 +141,7 @@ graph TD
     Course --- C_Name((name)):::attribute
     Course --- C_Desc((description)):::attribute
     Course --- C_Dept((departmentNumber)):::attribute
+    Course --- C_Teacher((teacherSerialNumber)):::attribute
     Course --- C_Active((isActive)):::attribute
     Course --- C_Cap((maxCapacity)):::attribute
     Course --- C_Sem((semester)):::attribute
@@ -168,6 +202,7 @@ erDiagram
         string name
         string description
         string departmentNumber FK
+        string teacherSerialNumber FK
         boolean isActive
         int maxCapacity
         string semester
@@ -194,11 +229,14 @@ erDiagram
     DEPARTMENT ||--|{ STUDENT : "contains"
     DEPARTMENT ||--|{ COURSE : "offers"
 
+    TEACHER ||--|{ COURSE : "teaches"
+    
     STUDENT ||--|{ STUDENT_COURSE : "enrolls"
     COURSE ||--|{ STUDENT_COURSE : "enrolled by"
 ```
 
 ## Database Schema
+
 1. USER Table
 ```sql
 CREATE TABLE USER (
@@ -263,12 +301,14 @@ CREATE TABLE COURSE (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     departmentNumber VARCHAR(20) NOT NULL,
+    teacherSerialNumber VARCHAR(50) NOT NULL,
     isActive BOOLEAN DEFAULT TRUE,
     maxCapacity INT NOT NULL CHECK (maxCapacity > 0),
     semester ENUM('FALL', 'SPRING', 'SUMMER') NOT NULL,
     academicYear INT NOT NULL CHECK (academicYear >= 2000),
     courseType ENUM('MANDATORY', 'ELECTIVE', 'GENERAL') NOT NULL,
-    FOREIGN KEY (departmentNumber) REFERENCES DEPARTMENT(departmentNumber)
+    FOREIGN KEY (departmentNumber) REFERENCES DEPARTMENT(departmentNumber),
+    FOREIGN KEY (teacherSerialNumber) REFERENCES TEACHER(userSerialNumber)
 );
 ```
 
@@ -318,7 +358,7 @@ CREATE TABLE STUDENT_COURSE (
    - MANDATORY
    - ELECTIVE
    - GENERAL
-   
+
 # UML Class Diagram
 
 ## User Management Diagram
@@ -360,8 +400,12 @@ classDiagram
 
     class Teacher {
         -String departmentNumber
+        -List~Course~ taughtCourses
         +String getDepartmentNumber()
         +void setDepartmentNumber(String)
+        +List~Course~ getTaughtCourses()
+        +void addCourse(Course)
+        +void removeCourse(Course)
     }
 
     class Student {
@@ -399,6 +443,7 @@ classDiagram
     Department "1" --> "*" Teacher : employs
     Department "1" --> "*" Student : contains
     Department "1" --> "*" Course : offers
+    Teacher "1" --> "*" Course : teaches
 
     class Department {
         -String departmentNumber
@@ -419,59 +464,5 @@ classDiagram
         -String name
         -String description
         -String departmentNumber
+        -String teacherSerialNumber
         -boolean isActive
-        -int maxCapacity
-        -String semester
-        -int academicYear
-        -String courseType
-        +String getCourseCode()
-        +String getName()
-        +void setName(String)
-        +String getDescription()
-        +void setDescription(String)
-        +String getDepartmentNumber()
-        +void setDepartmentNumber(String)
-        +boolean getIsActive()
-        +void setIsActive(boolean)
-        +int getMaxCapacity()
-        +void setMaxCapacity(int)
-        +String getSemester()
-        +void setSemester(String)
-        +int getAcademicYear()
-        +void setAcademicYear(int)
-        +String getCourseType()
-        +void setCourseType(String)
-    }
-```
-
-## Course Relationships Diagram
-
-```mermaid
-classDiagram
-    %% Course Relationships Diagram
-    Student "*" --> "*" Course : enrolls
-    Student "1" -- "*" StudentCourse
-    Course "1" -- "*" StudentCourse
-
-    class StudentCourse {
-        -String studentSerialNumber
-        -String courseCode
-        -float grade
-        -Date enrollmentYear
-        -float attendanceRate
-        -String semester
-        -int academicYear
-        -Date withdrawalDate
-        +String getStudentSerialNumber()
-        +String getCourseCode()
-        +float getGrade()
-        +void setGrade(float)
-        +Date getEnrollmentYear()
-        +float getAttendanceRate()
-        +void setAttendanceRate(float)
-        +String getSemester()
-        +int getAcademicYear()
-        +Date getWithdrawalDate()
-        +void setWithdrawalDate(Date)
-    }
-```
