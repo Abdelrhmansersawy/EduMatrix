@@ -1,8 +1,8 @@
 # EduMatrix™
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![Java](https://img.shields.io/badge/Java-17-orange.svg)
-![Jakarta EE](https://img.shields.io/badge/Jakarta_EE-10-red.svg)
+![Java](https://img.shields.io/badge/Java-23-orange.svg)
+![Java fx](https://img.shields.io/badge/JavaFX-18-blue)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)
 
 ![Image](/imgs/cover.png)
