@@ -329,7 +329,7 @@ CREATE TABLE STUDENT_COURSE (
 );
 ```
 
-### Constraints:
+## Constraints:
 - School Year: 0-4
 - GPA: 0.00-4.00
 - Grade: 0.00-100.00
@@ -337,24 +337,24 @@ CREATE TABLE STUDENT_COURSE (
 - Academic Year: ≥ 2000
 - Maximum Capacity: > 0
 
-### ENUMs:
-1. User Role:
+## ENUMs:
+### User Role:
    - ADMIN
    - TEACHER
    - STUDENT
 
-2. Academic Status:
+### Academic Status:
    - ACTIVE
    - PROBATION
    - SUSPENDED
    - GRADUATED
 
-3. Semester:
+### Semester:
    - FALL
    - SPRING
    - SUMMER
 
-4. Course Type:
+### Course Type:
    - MANDATORY
    - ELECTIVE
    - GENERAL
@@ -466,3 +466,137 @@ classDiagram
         -String departmentNumber
         -String teacherSerialNumber
         -boolean isActive
+        -int maxCapacity
+        -String semester
+        -int academicYear
+        -String courseType
+        +String getCourseCode()
+        +String getName()
+        +void setName(String)
+        +String getDescription()
+        +void setDescription(String)
+        +String getDepartmentNumber()
+        +void setDepartmentNumber(String)
+        +String getTeacherSerialNumber()
+        +void setTeacherSerialNumber(String)
+        +boolean getIsActive()
+        +void setIsActive(boolean)
+        +int getMaxCapacity()
+        +void setMaxCapacity(int)
+        +String getSemester()
+        +void setSemester(String)
+        +int getAcademicYear()
+        +void setAcademicYear(int)
+        +String getCourseType()
+        +void setCourseType(String)
+    }
+
+    class Teacher {
+        -String userSerialNumber
+        -String departmentNumber
+        -List~Course~ courses
+        +String getUserSerialNumber()
+        +String getDepartmentNumber()
+        +void setDepartmentNumber(String)
+        +List~Course~ getCourses()
+        +void addCourse(Course)
+        +void removeCourse(Course)
+    }
+
+    class Student {
+        -String userSerialNumber
+        -String departmentNumber
+        -int schoolYear
+        -float GPA
+        -String academicStatus
+        -boolean isScholarship
+        +String getUserSerialNumber()
+        +String getDepartmentNumber()
+        +void setDepartmentNumber(String)
+        +int getSchoolYear()
+        +void setSchoolYear(int)
+        +float getGPA()
+        +void setGPA(float)
+        +String getAcademicStatus()
+        +void setAcademicStatus(String)
+        +boolean getIsScholarship()
+        +void setIsScholarship(boolean)
+    }
+```
+
+## Course Relationships Diagram
+
+```mermaid
+classDiagram
+    %% Base Classes
+    class User {
+        -String userSerialNumber
+        -String firstName
+        -String lastName
+        -String phoneNumber
+        -String gmail
+        -String password
+        -LocalDate birthOfDate
+        -String role
+        -DateTime createdAt
+    }
+
+    class Department {
+        -String departmentNumber
+        -String name
+        -String description
+        -String location
+    }
+
+    class Course {
+        -String courseCode
+        -String name
+        -String description
+        -String departmentNumber
+        -String teacherSerialNumber
+        -boolean isActive
+        -int maxCapacity
+        -String semester
+        -int academicYear
+        -String courseType
+    }
+
+    %% Inheritance and Relationships
+    User <|-- Teacher : is a
+    User <|-- Student : is a
+    User <|-- Admin : is a
+
+    Department "1" --> "*" Teacher : employs
+    Department "1" --> "*" Student : contains
+    Department "1" --> "*" Course : offers
+    Teacher "1" --> "*" Course : teaches
+
+    class StudentCourse {
+        -Student student
+        -Course course
+        -float grade
+        -Date enrollmentYear
+        -float attendanceRate
+        -String semester
+        -int academicYear
+        -Date withdrawalDate
+    }
+
+    Student "1" -- "*" StudentCourse : has
+    Course "1" -- "*" StudentCourse : has
+
+    class Teacher {
+        -String departmentNumber
+    }
+
+    class Student {
+        -String departmentNumber
+        -int schoolYear
+        -float GPA
+        -String academicStatus
+        -boolean isScholarship
+    }
+
+    class Admin {
+    }
+```
