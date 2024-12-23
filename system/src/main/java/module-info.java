@@ -5,6 +5,7 @@ module org.example.system {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires mysql.connector.j;
 
     // Open packages to JavaFX
     opens org.example.system.controllers to javafx.fxml;
