@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.system.controllers.StudentDashboardController">
+
+    <top>
+        <VBox spacing="10" styleClass="header-section">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <GridPane hgap="10" vgap="10">
+                <Label text="Student Information" styleClass="section-title"
+                       GridPane.columnIndex="0" GridPane.columnSpan="2"/>
+
+                <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="nameLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Department:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="departmentLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                <Label text="School Year:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <Label fx:id="yearLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+                <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                <Label fx:id="emailLabel" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            </GridPane>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <Label text="Enrolled Courses" styleClass="section-title"/>
+            <TableView fx:id="coursesTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn text="Course Code" fx:id="codeColumn"/>
+                    <TableColumn text="Grade" fx:id="gradeColumn"/>
+                    <TableColumn text="Attendance" fx:id="attendanceColumn"/>
+                    <TableColumn text="Semester" fx:id="semesterColumn"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="10" styleClass="status-section">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <Label text="Academic Status" styleClass="section-title"/>
+
+            <GridPane hgap="10" vgap="10">
+                <Label text="GPA:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="gpaLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Status:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="statusLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Scholarship:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="scholarshipLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <ProgressBar fx:id="gpaProgress" progress="0.0"
+                             GridPane.columnSpan="2" GridPane.rowIndex="3"/>
+            </GridPane>
+        </VBox>
+    </right>
+
+</BorderPane>
