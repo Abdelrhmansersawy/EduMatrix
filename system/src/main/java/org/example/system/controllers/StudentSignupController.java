@@ -4,14 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.system.config.DatabaseConfig;
 import org.example.system.models.Department;
-import org.example.system.services.StudentRegistrationService;
+import org.example.system.services.StudentService;
 import org.example.system.users.Student;
 import org.example.system.utils.AlertUtils;
 import org.example.system.utils.ValidationUtils;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 
 public class StudentSignupController extends BaseController {
 
@@ -24,14 +22,13 @@ public class StudentSignupController extends BaseController {
     @FXML private DatePicker birthDatePicker;
     @FXML private ComboBox<String> departmentComboBox;
     @FXML private ComboBox<Integer> schoolYearComboBox;
-    @FXML private Button registerButton;
     @FXML private Button backButton;
 
-    private StudentRegistrationService registrationService;
+    private StudentService studentService;
 
     public StudentSignupController() {
         try {
-            this.registrationService = new StudentRegistrationService(DatabaseConfig.getConnection());
+            this.studentService = new StudentService(DatabaseConfig.getConnection());
         } catch (Exception e) {
             AlertUtils.showError("Database Error", "Could not connect to database");
         }
@@ -81,7 +78,7 @@ public class StudentSignupController extends BaseController {
                     departmentComboBox.getValue(),
                     schoolYearComboBox.getValue()
             );
-            registrationService.registerStudent(student);
+            studentService.registerStudent(student);
             AlertUtils.showInfo("Success", "Registration successful");
             navigateBack();
 
@@ -113,14 +110,8 @@ public class StudentSignupController extends BaseController {
     }
 
     @Override
-    protected void cleanup() {
-        try {
-            if (registrationService != null) {
-                registrationService.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    protected void cleanup() throws Exception {
+        studentService.close();
     }
 
     @Override

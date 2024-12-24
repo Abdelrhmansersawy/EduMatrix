@@ -3,6 +3,8 @@ package org.example.system.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.example.system.config.DatabaseConfig;
+import org.example.system.repositories.StudentRepository;
 import org.example.system.users.Student;
 import org.example.system.courses.StudentCourse;
 import org.example.system.utils.SessionManager;
@@ -30,15 +32,14 @@ public class StudentDashboardController {
     @FXML private TableColumn<StudentCourse, String> semesterColumn;
 
     private Student student;
+    private StudentRepository studentRepository;
 
     @FXML
     private void initialize() {
         try {
-            Object currentUser = SessionManager.getInstance().getCurrentUser();
-            if (!(currentUser instanceof Student)) {
-                throw new ClassCastException("Current user is not a Student");
-            }
-            student = (Student) currentUser;
+            studentRepository = new StudentRepository(DatabaseConfig.getConnection());
+            student = (Student) SessionManager.getInstance().getCurrentUser();
+
             setupTableColumns();
             updateUI();
         } catch (ClassCastException e) {
@@ -87,16 +88,6 @@ public class StudentDashboardController {
         }
     }
 
-    public void setStudent(Student student) {
-        if (student == null) {
-            LOGGER.warning("Attempted to set null student");
-            clearUI();
-            return;
-        }
-        this.student = student;
-        updateUI();
-    }
-
     private void updateUI() {
         if (student == null) {
             clearUI();
@@ -104,7 +95,7 @@ public class StudentDashboardController {
         }
 
         try {
-            nameLabel.setText(formatName(student.getFirstName(), student.getLastName()));
+            nameLabel.setText(student.getFullName());
             departmentLabel.setText(student.getDepartmentName() != null ?
                     student.getDepartmentName() : "");
             yearLabel.setText(String.valueOf(student.getSchoolYear()));
@@ -137,20 +128,6 @@ public class StudentDashboardController {
             LOGGER.log(Level.SEVERE, "Error loading enrolled courses", e);
             coursesTable.getItems().clear();
         }
-    }
-
-    private String formatName(String firstName, String lastName) {
-        StringBuilder name = new StringBuilder();
-        if (firstName != null && !firstName.trim().isEmpty()) {
-            name.append(firstName.trim());
-        }
-        if (lastName != null && !lastName.trim().isEmpty()) {
-            if (name.length() > 0) {
-                name.append(" ");
-            }
-            name.append(lastName.trim());
-        }
-        return name.toString();
     }
 
     private void clearUI() {

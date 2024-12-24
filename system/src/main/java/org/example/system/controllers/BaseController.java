@@ -42,7 +42,7 @@ public abstract class BaseController {
 
     protected abstract void initialize() throws Exception;
 
-    protected abstract void cleanup();
+    protected abstract void cleanup() throws Exception;
 
     protected abstract void refreshView() throws Exception;
 
