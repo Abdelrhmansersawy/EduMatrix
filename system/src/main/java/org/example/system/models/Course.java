@@ -2,17 +2,24 @@
 
     import org.example.system.enums.CourseType;
     import org.example.system.enums.Semester;
+    import org.example.system.users.Student;
 
     import java.sql.Connection;
+    import java.sql.PreparedStatement;
+    import java.sql.ResultSet;
+    import java.sql.SQLException;
     import java.time.LocalDateTime;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Optional;
 
     public class Course {
-        private String courseCode;
+        public String courseCode;
         private String name;
         private String description;
         private String departmentNumber;
         private String teacherSerialNumber;
-        private boolean isActive;
+        public boolean isActive;
         private int maxCapacity;
         private Semester semester;
         private int academicYear;
@@ -151,4 +158,48 @@
                 throw new IllegalArgumentException("Academic year must be 2000 or later");
             }
         }
+        public int getStudentsCount() {
+            String sql = "SELECT COUNT(*) FROM STUDENT_COURSE WHERE courseCode = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, getCourseCode());
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            } catch (SQLException e) {
+                // Log the error
+                return 0;
+            }
+            return 0;
+        }
+
+        public Optional<List<Student>> getEnrolledStudents(Connection connection) {
+            List<Student> enrolledStudents = new ArrayList<>();
+            String query = """
+                               SELECT s.*, sc.grade, sc.attendanceRate
+                               FROM STUDENT s 
+                               JOIN STUDENT_COURSE sc ON s.userSerialNumber = sc.userSerialNumber
+                               WHERE sc.courseCode = ? AND sc.semester = ? AND sc.academicYear = ?
+                           """;
+
+            try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setString(1, this.courseCode);
+                stmt.setString(2, this.semester.name());
+                stmt.setInt(3, this.academicYear);
+
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    Student student = new Student(connection);
+                    student.setUserSerialNumber(rs.getString("userSerialNumber"));
+                    student.setGrade(rs.getDouble("grade"));
+                    enrolledStudents.add(student);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Error fetching enrolled students: " + e.getMessage());
+            }
+            return Optional.of(enrolledStudents);
+        }
+
+
     }

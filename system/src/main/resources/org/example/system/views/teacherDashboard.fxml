@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.system.controllers.TeacherDashboardController"
+            prefWidth="1000" prefHeight="700">
+
+    <left>
+        <VBox spacing="10" styleClass="sidebar" prefWidth="300">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Personal Information" styleClass="section-header"/>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label fx:id="teacherNameLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label fx:id="teacherEmailLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Phone:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label fx:id="teacherPhoneLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Department:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label fx:id="departmentLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Birth Date:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <Label fx:id="birthDateLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Courses:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <Label fx:id="coursesCountLabel" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <TableView fx:id="coursesTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn text="Course Code" fx:id="courseCodeColumn"/>
+                    <TableColumn text="Course Name" fx:id="courseNameColumn"/>
+                    <TableColumn text="Students Count" fx:id="studentsCountColumn"/>
+                    <TableColumn text="Actions" fx:id="actionsColumn"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" styleClass="status-bar">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+            <Label fx:id="statusLabel"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

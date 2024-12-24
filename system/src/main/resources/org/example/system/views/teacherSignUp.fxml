@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.system.controllers.TeacherSignupController"
+      styleClass="signup-container">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <Label text="Student Registration" styleClass="title-label"/>
+
+    <ScrollPane fitToWidth="true" maxHeight="500">
+        <VBox spacing="10.0" maxWidth="400" styleClass="form-container">
+            <TextField fx:id="firstNameField" promptText="First Name"/>
+            <TextField fx:id="lastNameField" promptText="Last Name"/>
+            <TextField fx:id="emailField" promptText="Email"/>
+            <PasswordField fx:id="passwordField" promptText="Password"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password"/>
+            <TextField fx:id="phoneNumberField" promptText="Phone Number"/>
+            <DatePicker fx:id="birthDatePicker" promptText="Birth Date"/>
+            <ComboBox fx:id="departmentComboBox" promptText="Department" maxWidth="Infinity"/>
+
+            <HBox spacing="10.0" alignment="CENTER">
+                <Button fx:id="registerButton" text="Register"
+                        onAction="#handleRegister"
+                        maxWidth="Infinity"
+                        styleClass="primary-button"
+                        HBox.hgrow="ALWAYS"/>
+                <Button fx:id="backButton" text="Back"
+                        onAction="#handleBack"
+                        maxWidth="Infinity"
+                        styleClass="secondary-button"
+                        HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

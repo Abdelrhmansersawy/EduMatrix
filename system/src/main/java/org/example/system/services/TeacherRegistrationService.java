@@ -1,34 +1,32 @@
 package org.example.system.services;
 
 import org.example.system.users.Student;
+import org.example.system.users.Teacher;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public class StudentRegistrationService implements AutoCloseable {
+public class TeacherRegistrationService implements AutoCloseable {
     private final Connection connection;
 
-    public StudentRegistrationService(Connection connection) {
+    public TeacherRegistrationService(Connection connection) {
         this.connection = connection;
     }
 
-    public void registerStudent(Student student) throws SQLException {
+    public void registerTeacher(Teacher teacher) throws SQLException {
         try {
             connection.setAutoCommit(false);
 
-            student.createNewUser();
+            teacher.createNewUser();
 
-            String sql = "INSERT INTO STUDENT (userSerialNumber, departmentNumber, schoolYear, GPA, academicStatus, isScholarship) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO TEACHER (userSerialNumber, departmentNumber) " +
+                    "VALUES (?, ?)";
 
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, student.getUserSerialNumber());
-                stmt.setString(2, student.getDepartmentNumber());
-                stmt.setInt(3, student.getSchoolYear());
-                stmt.setDouble(4, student.getGPA());
-                stmt.setString(5, student.getAcademicStatus());
-                stmt.setBoolean(6, student.isScholarship());
+                stmt.setString(1, teacher.getUserSerialNumber());
+                stmt.setString(2, teacher.getDepartmentNumber());
                 stmt.executeUpdate();
             }
 

@@ -3,17 +3,16 @@ package org.example.system.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.system.config.DatabaseConfig;
+import org.example.system.enums.Role;
+import org.example.system.enums.Semester;
 import org.example.system.models.Department;
-import org.example.system.services.StudentRegistrationService;
-import org.example.system.users.Student;
+import org.example.system.services.TeacherRegistrationService;
+import org.example.system.users.Teacher;
 import org.example.system.utils.AlertUtils;
+import org.example.system.utils.SessionManager;
 import org.example.system.utils.ValidationUtils;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-
-public class StudentSignupController extends BaseController {
+public class TeacherSignupController extends BaseController {
 
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
@@ -23,18 +22,18 @@ public class StudentSignupController extends BaseController {
     @FXML private TextField phoneNumberField;
     @FXML private DatePicker birthDatePicker;
     @FXML private ComboBox<String> departmentComboBox;
-    @FXML private ComboBox<Integer> schoolYearComboBox;
     @FXML private Button registerButton;
     @FXML private Button backButton;
 
-    private StudentRegistrationService registrationService;
+    private TeacherRegistrationService registrationService;
 
-    public StudentSignupController() {
+    public TeacherSignupController() {
         try {
-            this.registrationService = new StudentRegistrationService(DatabaseConfig.getConnection());
+            this.registrationService = new TeacherRegistrationService(DatabaseConfig.getConnection());
         } catch (Exception e) {
             AlertUtils.showError("Database Error", "Could not connect to database");
         }
+
     }
 
     @FXML
@@ -44,7 +43,6 @@ public class StudentSignupController extends BaseController {
     }
 
     private void setupValidation() {
-
         emailField.textProperty().addListener((o, old, newVal) ->
                 validateField(emailField, ValidationUtils.isValidEmail(newVal)));
 
@@ -57,10 +55,7 @@ public class StudentSignupController extends BaseController {
 
     private void setupComboBoxes() throws Exception {
         departmentComboBox.getItems().clear();
-        schoolYearComboBox.getItems().clear();
         departmentComboBox.getItems().addAll(Department.getAllDepartmentNames(DatabaseConfig.getConnection()));
-
-        schoolYearComboBox.getItems().addAll(0,1,2,3,4);
     }
 
     @FXML
@@ -70,18 +65,22 @@ public class StudentSignupController extends BaseController {
             return;
         }
         try {
-            Student student = new Student(
+            Teacher teacher = new Teacher(
                     DatabaseConfig.getConnection(),
                     firstNameField.getText(),
                     lastNameField.getText(),
                     phoneNumberField.getText(),
                     emailField.getText(),
                     passwordField.getText(),
-                    LocalDateTime.of(birthDatePicker.getValue(), java.time.LocalTime.MIDNIGHT),
-                    departmentComboBox.getValue(),
-                    schoolYearComboBox.getValue()
+                    birthDatePicker.getValue().atStartOfDay(),
+                    Role.TEACHER,
+                    departmentComboBox.getValue()
             );
-            registrationService.registerStudent(student);
+
+            String departmentName = departmentComboBox.getValue();
+            teacher.setDepartmentNumber(Department.getDepartmentNumber(DatabaseConfig.getConnection(), departmentName));
+
+            registrationService.registerTeacher(teacher);
             AlertUtils.showInfo("Success", "Registration successful");
             navigateBack();
 
@@ -108,8 +107,7 @@ public class StudentSignupController extends BaseController {
                 ValidationUtils.isValidPassword(passwordField.getText()) &&
                 passwordField.getText().equals(confirmPasswordField.getText()) &&
                 birthDatePicker.getValue() != null &&
-                departmentComboBox.getValue() != null &&
-                schoolYearComboBox.getValue() != null;
+                departmentComboBox.getValue() != null;
     }
 
     @Override
@@ -138,7 +136,6 @@ public class StudentSignupController extends BaseController {
         phoneNumberField.clear();
         birthDatePicker.cancelEdit();
         departmentComboBox.cancelEdit();
-        schoolYearComboBox.cancelEdit();
     }
     private void validateField(TextField field, boolean isValid) {
         if (isValid) {

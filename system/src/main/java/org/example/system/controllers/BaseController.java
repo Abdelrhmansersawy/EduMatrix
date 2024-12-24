@@ -40,11 +40,11 @@ public abstract class BaseController {
         stage.close();
     }
 
-    protected abstract void initialize();
+    protected abstract void initialize() throws Exception;
 
     protected abstract void cleanup();
 
-    protected abstract void refreshView();
+    protected abstract void refreshView() throws Exception;
 
     protected abstract void resetForm();
 

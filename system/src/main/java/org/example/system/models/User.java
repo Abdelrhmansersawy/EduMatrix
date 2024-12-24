@@ -5,6 +5,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+import java.util.UUID;
 
 public abstract class User {
     private String userSerialNumber;
@@ -23,6 +26,24 @@ public abstract class User {
 
     public User(Connection connection) {
         this.connection = connection;
+    }
+    public User(Connection connection, String firstName, String lastName, String phoneNumber,
+                String gmail, String password, LocalDateTime birthOfDate, Role role) {
+        this.connection = connection;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.gmail = gmail;
+        this.password = password;
+        this.birthOfDate = birthOfDate;
+        this.role = role;
+        this.userSerialNumber = generatePrimaryKey();
+    }
+
+    private String generatePrimaryKey() {
+        return String.format("USR-%s-%d",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")),
+                Math.abs(new Random().nextInt(9999)));
     }
 
     public String getUserSerialNumber() {
@@ -167,6 +188,29 @@ public abstract class User {
         this.createdAt = createdAt;
     }
 
+    public void createNewUser() {
+        String sql = "INSERT INTO USER (userSerialNumber, firstName, lastName, phoneNumber, gmail, password, birthOfDate, createdAt, role) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, userSerialNumber);
+            stmt.setString(2, firstName);
+            stmt.setString(3, lastName);
+            stmt.setString(4, phoneNumber);
+            stmt.setString(5, gmail);
+            stmt.setString(6, password); // Consider hashing
+            stmt.setTimestamp(7, java.sql.Timestamp.valueOf(birthOfDate));
+            stmt.setTimestamp(8, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(9, role.name());
+
+            stmt.executeUpdate();
+            this.userSerialNumber = userSerialNumber;
+            this.createdAt = LocalDateTime.now();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error creating new user " + e.getMessage());
+        }
+    }
+
     public void loadUser(String userSerialNumber) {
         String sql = "SELECT * FROM USER WHERE userSerialNumber = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -186,5 +230,21 @@ public abstract class User {
         } catch (SQLException e) {
             throw new RuntimeException("Error loading user", e);
         }
+    }
+    @Override
+    public String toString() {
+        return "User{" +
+                "userSerialNumber='" + userSerialNumber + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", gmail='" + gmail + '\'' +
+                ", role=" + role +
+                ", birthOfDate=" + birthOfDate +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }

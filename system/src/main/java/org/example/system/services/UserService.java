@@ -1,5 +1,6 @@
 package org.example.system.services;
 
+import org.example.system.models.Department;
 import org.example.system.users.Admin;
 import org.example.system.users.Student;
 import org.example.system.users.Teacher;
@@ -87,6 +88,8 @@ public class UserService {
                 student.setGPA(rs.getDouble("GPA"));
                 student.setAcademicStatus(rs.getString("academicStatus"));
                 student.setScholarship(rs.getBoolean("isScholarship"));
+                student.setDepartmentName(Department.getDepartmentName(connection, rs.getString("departmentNumber")));
+                System.out.println(student.getDepartmentName() + " " + rs.getString("departmentNumber"));
                 user = student;
             }
             case TEACHER -> {
