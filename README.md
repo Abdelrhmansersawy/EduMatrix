@@ -89,9 +89,9 @@ graph TD
 
     %% Entity-Relationship Connections
     User --"1"--- IsTeacherRel
-    IsTeacherRel --"1"--- Teacher
+    IsTeacherRel --"N"--- Teacher
     User --"1"--- IsStudentRel
-    IsStudentRel --"1"--- Student
+    IsStudentRel --"N"--- Student
     User --"1"--- IsAdminRel
     IsAdminRel --"1"--- Admin
 
