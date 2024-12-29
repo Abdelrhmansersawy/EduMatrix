@@ -6,7 +6,7 @@ import org.example.system.config.DatabaseConfig;
 import org.example.system.enums.Role;
 import org.example.system.enums.Semester;
 import org.example.system.models.Department;
-import org.example.system.services.TeacherRegistrationService;
+import org.example.system.services.TeacherService;
 import org.example.system.users.Teacher;
 import org.example.system.utils.AlertUtils;
 import org.example.system.utils.SessionManager;
@@ -25,11 +25,11 @@ public class TeacherSignupController extends BaseController {
     @FXML private Button registerButton;
     @FXML private Button backButton;
 
-    private TeacherRegistrationService registrationService;
+    private TeacherService registrationService;
 
     public TeacherSignupController() {
         try {
-            this.registrationService = new TeacherRegistrationService(DatabaseConfig.getConnection());
+            this.registrationService = new TeacherService(DatabaseConfig.getConnection());
         } catch (Exception e) {
             AlertUtils.showError("Database Error", "Could not connect to database");
         }

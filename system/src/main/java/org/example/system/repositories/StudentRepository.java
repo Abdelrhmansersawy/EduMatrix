@@ -19,7 +19,26 @@ public class StudentRepository {
     public StudentRepository(Connection connection) {
         this.connection = connection;
     }
-    public void updateStudent(Student student) {
+
+    public void save(Student student) throws SQLException {
+        String sql = """
+            INSERT INTO STUDENT 
+                (userSerialNumber, departmentNumber, schoolYear, GPA, 
+                academicStatus, isScholarship)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, student.getUserSerialNumber());
+            stmt.setString(2, student.getDepartmentNumber());
+            stmt.setInt(3, student.getSchoolYear());
+            stmt.setDouble(4, student.getGPA());
+            stmt.setString(5, student.getAcademicStatus());
+            stmt.setBoolean(6, student.isScholarship());
+            stmt.executeUpdate();
+        }
+    }
+    public void update(Student student) {
         String sql = "UPDATE STUDENT SET GPA = ?, departmentNumber = ?, schoolYear = ?, " +
                 "academicStatus = ?, isScholarship = ? WHERE userSerialNumber = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -37,7 +56,6 @@ public class StudentRepository {
 
         // TODO: Update user data of student
     }
-
     public List<StudentCourse> findEnrolledCourses(String userSerialNumber) {
         String sql = """
             SELECT sc.*, c.name, c.description, c.departmentNumber, c.teacherSerialNumber, 
@@ -66,7 +84,6 @@ public class StudentRepository {
         }
         return studentCourses;
     }
-
     private StudentCourse mapResultSetToStudentCourse(ResultSet rs, String userSerialNumber) throws SQLException {
         return new StudentCourse(
                 connection,

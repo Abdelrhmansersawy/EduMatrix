@@ -37,14 +37,12 @@ public class TeacherDashboardController {
     @FXML
     private void initialize() {
         try {
-            teacher = (Teacher) SessionManager.getInstance().getCurrentUser();
             connection = DatabaseConfig.getConnection();
+            teacher = new Teacher(connection, SessionManager.getInstance().getCurrentUser());
+            loadTeacherData();
+            setupTableColumns();
+            setupActionsColumn();
 
-            if (teacher != null && connection != null) {
-                loadTeacherData();
-                setupTableColumns();
-                setupActionsColumn();
-            }
         } catch (Exception e) {
             AlertUtils.showError("Error", "Failed to initialize: " + e.getMessage());
         }
@@ -202,7 +200,7 @@ public class TeacherDashboardController {
             teacherNameLabel.setText(teacher.getFullName());
             teacherEmailLabel.setText(teacher.getGmail());
             teacherPhoneLabel.setText(teacher.getPhoneNumber());
-            departmentLabel.setText(Department.getDepartmentName(connection, teacher.getDepartmentNumber()));
+            departmentLabel.setText(teacher.getDepartmentName());
             birthDateLabel.setText(teacher.getBirthOfDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
             coursesCountLabel.setText("Total Courses: " + teacher.getTeachingCourses().size());
             refreshCoursesTable();
